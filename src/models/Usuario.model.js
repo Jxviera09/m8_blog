@@ -28,6 +28,10 @@ Usuario.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+      avatar: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
     admin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

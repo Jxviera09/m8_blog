@@ -4,7 +4,7 @@ const getPerfil = async (req, res) => {
   try {
     // el id NO viene de la URL: viene del token, así nadie puede pedir el perfil de otro
     const usuario = await Usuario.findByPk(req.usuario.id, {
-      attributes: ["id", "nombre", "email", "admin"],
+      attributes: ["id", "nombre", "email", "admin", "avatar"],
     });
 
     if (!usuario) {

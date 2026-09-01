@@ -5,7 +5,7 @@ const getUsuariosById = async (req, res) => {
     let { id } = req.params;
 
     const usuario = await Usuario.findByPk(id, {
-      attributes: ["id", "nombre", "email"],
+      attributes: ["id", "nombre", "email", "avatar"],
     });
 
     res.json({

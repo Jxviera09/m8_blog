@@ -29,7 +29,7 @@ const getUsuarios = async (req, res) => {
     }
 
     const { count, rows } = await Usuario.findAndCountAll({
-      attributes: ["id", "nombre", "email"],
+      attributes: ["id", "nombre", "email", "avatar"],
       offset: isNaN(offset) ? undefined : offset,
       limit: isNaN(limit) ? undefined : limit,
       order,
