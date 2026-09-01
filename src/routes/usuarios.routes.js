@@ -1,8 +1,11 @@
 import express from "express";
 import * as usuariosControllers from "../controllers/usuarios/index.js";
-//import validateBody from "../middlewares/validateBody.js";
+import verifyToken from "../middlewares/verifyToken.js";
 
 const router = express.Router();
+
+//PERFIL DEL USUARIO AUTENTICADO (RUTA PROTEGIDA)
+router.get("/perfil", verifyToken, usuariosControllers.getPerfil);
 
 //OBTENER TODOS LOS USUARIOS
 router.get("/", usuariosControllers.getUsuarios);
