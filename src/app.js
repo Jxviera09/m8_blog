@@ -1,4 +1,5 @@
 import express from "express";
+import logger from "./middlewares/logger.js";
 import authRoutes from "./routes/auth.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
 import publicacionesRoutes from "./routes/publicaciones.routes.js";
@@ -10,6 +11,9 @@ const app = express();
 //MIDDLEWARES GLOBALES
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+//REGISTRO DE PETICIONES EN ARCHIVO PLANO
+app.use(logger);
 
 //SERVIR ARCHIVOS ESTÁTICOS
 app.use("/uploads", express.static("uploads"));
