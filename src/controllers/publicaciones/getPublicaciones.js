@@ -13,13 +13,15 @@ const getPublicaciones = async (req, res) => {
       ],
     });
 
-    res.json({
-      status: "Ok",
-      totalPublicacaciones: count,
-      publicaciones: rows,
+    res.status(200).json({
+      status: "success",
+      message: "Publicaciones obtenidas con éxito.",
+      data: { total: count, publicaciones: rows },
     });
   } catch (error) {
-    res.status(500).json({ status: "error", message: error.message });
+    res
+      .status(500)
+      .json({ status: "error", message: error.message, data: null });
   }
 };
 

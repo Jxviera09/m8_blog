@@ -35,13 +35,15 @@ const getUsuarios = async (req, res) => {
       order,
     });
 
-    res.json({
-      status: "Ok",
-      totalUsuariosDb: count,
-      usuarios: rows,
+    res.status(200).json({
+      status: "success",
+      message: "Usuarios obtenidos con éxito.",
+      data: { total: count, usuarios: rows },
     });
   } catch (error) {
-    res.status(500).json({ status: "error", message: error.message });
+    res
+      .status(500)
+      .json({ status: "error", message: error.message, data: null });
   }
 };
 

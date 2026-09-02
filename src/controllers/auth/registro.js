@@ -12,8 +12,8 @@ const registroUsuario = async (req, res) => {
 
       return res.status(400).json({
         status: "fail",
-        message:
-          "No se proprocionan los campos requeridos para crear el usuario. Debe proporcionar los siguientes campos: [nombre, email, password]",
+        message: "Faltan campos",
+        data: null,
       });
     }
 
@@ -38,19 +38,28 @@ const registroUsuario = async (req, res) => {
       await t.rollback();
       return res.status(400).json({
         status: "fail",
-        message:
-          "El email utilizado ya existe en la base de datos, intente recuperar su contraseña o debe ponerse en contacto con soporte: soporte@correo.cl",
+        message: "Email duplicado",
+        data: null,
       });
     }
 
     await t.commit();
     res.status(201).json({
-      status: "Ok",
+      status: "success",
       message: `Usuario creado con éxito con id: ${usuario.id}`,
+      data: {
+        usuario: {
+          id: usuario.id,
+          nombre: usuario.nombre,
+          email: usuario.email,
+        },
+      },
     });
   } catch (error) {
     await t.rollback();
-    res.status(500).json({ status: "error", message: error.message });
+    res
+      .status(500)
+      .json({ status: "error", message: error.message, data: null });
   }
 };
 
