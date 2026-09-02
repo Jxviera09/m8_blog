@@ -1,10 +1,10 @@
-import Comentario from "../../models/Comentario.model.js";
+import * as comentariosService from "../../services/comentarios.service.js";
 
 const deleteComentario = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const comentario = await Comentario.findByPk(id);
+    const comentario = await comentariosService.findById(id);
 
     if (!comentario) {
       return res.status(404).json({
@@ -22,7 +22,7 @@ const deleteComentario = async (req, res) => {
       });
     }
 
-    await comentario.destroy();
+    await comentariosService.remove(comentario);
 
     res.status(200).json({
       status: "success",

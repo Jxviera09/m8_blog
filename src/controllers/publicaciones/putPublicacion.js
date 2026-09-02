@@ -1,11 +1,9 @@
-import Publicacion from "../../models/Publicacion.model.js";
+import * as publicacionesService from "../../services/publicaciones.service.js";
 
 const putPublicacion = async (req, res) => {
   try {
     const { id } = req.params;
-    const { titulo, contenido } = req.body;
-
-    const publicacion = await Publicacion.findByPk(id);
+    const publicacion = await publicacionesService.findById(id);
 
     if (!publicacion) {
       return res.status(404).json({
@@ -24,16 +22,12 @@ const putPublicacion = async (req, res) => {
       });
     }
 
-    // whitelist: solo estos campos son editables, aunque el body traiga más
-    if (titulo !== undefined) publicacion.titulo = titulo;
-    if (contenido !== undefined) publicacion.contenido = contenido;
-
-    await publicacion.save();
+    const actualizada = await publicacionesService.update(publicacion, req.body);
 
     res.status(200).json({
       status: "success",
       message: "Publicación actualizada con éxito.",
-      data: { publicacion },
+      data: { publicacion: actualizada },
     });
   } catch (error) {
     res.status(500).json({ status: "error", message: error.message, data: null });

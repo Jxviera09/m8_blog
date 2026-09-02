@@ -1,17 +1,16 @@
-import Comentario from "../../models/Comentario.model.js";
-import Usuario from "../../models/Usuario.model.js";
+import * as comentariosService from "../../services/comentarios.service.js";
 
 const getComentario = async (req, res) => {
   try {
     // filtro dinámico: si viene ?publicacionId= se acota, si no, devuelve todos
     const { publicacionId } = req.query;
-    const where = {};
-    if (publicacionId) where.publicacionId = publicacionId;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const offset = req.query.offset ? Number(req.query.offset) : undefined;
 
-    const { count, rows } = await Comentario.findAndCountAll({
-      where,
-      attributes: { exclude: ["usuarioId"] },
-      include: [{ model: Usuario, attributes: ["id", "nombre", "email"] }],
+    const { count, rows } = await comentariosService.findAll({
+      publicacionId,
+      limit,
+      offset,
     });
 
     res.status(200).json({

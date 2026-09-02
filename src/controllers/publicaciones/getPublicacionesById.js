@@ -1,9 +1,9 @@
-import Publicacion from "../../models/Publicacion.model.js";
+import * as publicacionesService from "../../services/publicaciones.service.js";
 
 const getPublicacionById = async (req, res) => {
   try {
-    let { id } = req.params;
-    const publicacion = await Publicacion.findByPk(id);
+    const { id } = req.params;
+    const publicacion = await publicacionesService.findById(id);
 
     if (!publicacion) {
       return res.status(404).json({
@@ -19,9 +19,7 @@ const getPublicacionById = async (req, res) => {
       data: { publicacion },
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ status: "error", message: error.message, data: null });
+    res.status(500).json({ status: "error", message: error.message, data: null });
   }
 };
 

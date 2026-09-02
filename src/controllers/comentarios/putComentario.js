@@ -1,11 +1,10 @@
-import Comentario from "../../models/Comentario.model.js";
+import * as comentariosService from "../../services/comentarios.service.js";
 
 const putComentario = async (req, res) => {
   try {
     const { id } = req.params;
-    const { contenido } = req.body;
 
-    const comentario = await Comentario.findByPk(id);
+    const comentario = await comentariosService.findById(id);
 
     if (!comentario) {
       return res.status(404).json({
@@ -24,15 +23,12 @@ const putComentario = async (req, res) => {
       });
     }
 
-    // whitelist: contenido es lo único editable. El autor y la publicación no cambian
-    if (contenido !== undefined) comentario.contenido = contenido;
-
-    await comentario.save();
+    const actualizado = await comentariosService.update(comentario, req.body);
 
     res.status(200).json({
       status: "success",
       message: "Comentario actualizado con éxito.",
-      data: { comentario },
+      data: { comentario: actualizado },
     });
   } catch (error) {
     res.status(500).json({ status: "error", message: error.message, data: null });

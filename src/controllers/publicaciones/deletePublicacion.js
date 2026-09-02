@@ -1,10 +1,9 @@
-import Publicacion from "../../models/Publicacion.model.js";
+import * as publicacionesService from "../../services/publicaciones.service.js";
 
 const deletePublicacion = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const publicacion = await Publicacion.findByPk(id);
+    const publicacion = await publicacionesService.findById(id);
 
     if (!publicacion) {
       return res.status(404).json({
@@ -14,7 +13,6 @@ const deletePublicacion = async (req, res) => {
       });
     }
 
-    // 403 y no 404: la publicación existe, lo que falta es permiso sobre ella
     if (publicacion.usuarioId !== req.usuario.id) {
       return res.status(403).json({
         status: "fail",
@@ -23,7 +21,7 @@ const deletePublicacion = async (req, res) => {
       });
     }
 
-    await publicacion.destroy();
+    await publicacionesService.remove(publicacion);
 
     res.status(200).json({
       status: "success",
