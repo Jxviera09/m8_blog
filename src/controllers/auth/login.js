@@ -1,6 +1,4 @@
-import jwt from "jsonwebtoken";
-import Usuario from "../../models/Usuario.model.js";
-import { compararHash } from "../../utils/utils.js";
+import * as authService from "../../services/auth.service.js";
 
 const login = async (req, res) => {
   try {
@@ -9,16 +7,18 @@ const login = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         status: "fail",
-        message: "Debe proporcionar los campos: [email, password]",
+        message: "Debe proporcionar los siguientes campos: [email, password]",
         data: null,
       });
     }
 
     email = email.toLowerCase().trim();
-    const usuario = await Usuario.findOne({ where: { email } });
 
-    // se evalúa el usuario ANTES de tocar usuario.password
-    if (!usuario || !(await compararHash(password, usuario.password))) {
+    const usuario = await authService.verificarCredenciales({ email, password });
+
+    // mismo mensaje si el email no existe o si la password está mala:
+    // responder distinto permitiría averiguar qué correos están registrados
+    if (!usuario) {
       return res.status(401).json({
         status: "fail",
         message: "Autenticación fallida: email y/o password incorrectos.",
@@ -26,11 +26,7 @@ const login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
-      { id: usuario.id, email: usuario.email, admin: usuario.admin },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN },
-    );
+    const token = authService.generarToken(usuario);
 
     res.status(200).json({
       status: "success",
@@ -45,9 +41,7 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ status: "error", message: error.message, data: null });
+    res.status(500).json({ status: "error", message: error.message, data: null });
   }
 };
 

@@ -1,49 +1,32 @@
-import Usuario from "../../models/Usuario.model.js";
-import sequelize from "../../config/database.js";
-import { generarHash } from "../../utils/utils.js";
+import * as authService from "../../services/auth.service.js";
 
 const registroUsuario = async (req, res) => {
-  const t = await sequelize.transaction();
   try {
     let { nombre, email, password } = req.body;
 
     if (!nombre || !email || !password) {
-      await t.rollback();
-
       return res.status(400).json({
         status: "fail",
-        message: "Faltan campos",
+        message:
+          "Debe proporcionar los siguientes campos: [nombre, email, password]",
         data: null,
       });
     }
-
-    //BUSCAR Y/O CREAR EL USUARIO
 
     email = email.toLowerCase().trim();
 
-    //SE ENVÍA A GENERAR HASH CON BCRYPT
-    let passwordHash = await generarHash(password);
+    const usuario = await authService.registrar({ nombre, email, password });
 
-    const [usuario, created] = await Usuario.findOrCreate({
-      where: { email },
-      defaults: {
-        nombre,
-        email,
-        password: passwordHash,
-      },
-      transaction: t,
-    });
-
-    if (!created) {
-      await t.rollback();
+    if (!usuario) {
       return res.status(400).json({
         status: "fail",
-        message: "Email duplicado",
+        message:
+          "El email utilizado ya existe en la base de datos. Intente recuperar su contraseña o contacte a soporte: soporte@correo.cl",
         data: null,
       });
     }
 
-    await t.commit();
+    // se arma el objeto a mano: el registro completo trae el password hasheado
     res.status(201).json({
       status: "success",
       message: `Usuario creado con éxito con id: ${usuario.id}`,
@@ -56,10 +39,7 @@ const registroUsuario = async (req, res) => {
       },
     });
   } catch (error) {
-    await t.rollback();
-    res
-      .status(500)
-      .json({ status: "error", message: error.message, data: null });
+    res.status(500).json({ status: "error", message: error.message, data: null });
   }
 };
 

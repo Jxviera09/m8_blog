@@ -1,4 +1,4 @@
-import Usuario from "../../models/Usuario.model.js";
+import * as usuariosService from "../../services/usuarios.service.js";
 
 const subirAvatar = async (req, res) => {
   try {
@@ -12,7 +12,7 @@ const subirAvatar = async (req, res) => {
     }
 
     // el usuario sale del token: cada quien sube su propia foto
-    const usuario = await Usuario.findByPk(req.usuario.id);
+    const usuario = await usuariosService.findParaEditar(req.usuario.id);
 
     if (!usuario) {
       return res.status(404).json({
@@ -22,16 +22,18 @@ const subirAvatar = async (req, res) => {
       });
     }
 
-    usuario.avatar = `/uploads/${req.file.filename}`;
-    await usuario.save();
+    const actualizado = await usuariosService.actualizarAvatar(
+      usuario,
+      `/uploads/${req.file.filename}`,
+    );
 
     res.status(200).json({
       status: "success",
       message: "Avatar actualizado con éxito.",
       data: {
-        id: usuario.id,
-        nombre: usuario.nombre,
-        avatar: usuario.avatar,
+        id: actualizado.id,
+        nombre: actualizado.nombre,
+        avatar: actualizado.avatar,
         archivo: {
           nombreOriginal: req.file.originalname,
           tipo: req.file.mimetype,
@@ -40,9 +42,7 @@ const subirAvatar = async (req, res) => {
       },
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ status: "error", message: error.message, data: null });
+    res.status(500).json({ status: "error", message: error.message, data: null });
   }
 };
 

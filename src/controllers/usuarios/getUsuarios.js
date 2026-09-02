@@ -1,38 +1,16 @@
-import Usuario from "../../models/Usuario.model.js";
+import * as usuariosService from "../../services/usuarios.service.js";
 
 const getUsuarios = async (req, res) => {
   try {
-    let { offset, limit, sortBy, direction } = req.query;
+    const { sortBy, direction } = req.query;
+    const offset = req.query.offset ? Number(req.query.offset) : undefined;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
 
-    if (offset) {
-      offset = Number(offset);
-    }
-
-    if (limit) {
-      limit = Number(limit);
-    }
-
-    const opcionesOrden = ["id", "nombre", "email"];
-    const order = [];
-
-    if (sortBy && opcionesOrden.includes(sortBy)) {
-      sortBy = sortBy.toLowerCase().trim();
-
-      let orden;
-      if (direction && direction.toLowerCase().trim() == "desc") {
-        orden = [sortBy, "DESC"];
-      } else {
-        orden = [sortBy, "ASC"];
-      }
-
-      order.push(orden);
-    }
-
-    const { count, rows } = await Usuario.findAndCountAll({
-      attributes: ["id", "nombre", "email", "avatar"],
-      offset: isNaN(offset) ? undefined : offset,
-      limit: isNaN(limit) ? undefined : limit,
-      order,
+    const { count, rows } = await usuariosService.findAll({
+      offset,
+      limit,
+      sortBy,
+      direction,
     });
 
     res.status(200).json({
@@ -41,9 +19,7 @@ const getUsuarios = async (req, res) => {
       data: { total: count, usuarios: rows },
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ status: "error", message: error.message, data: null });
+    res.status(500).json({ status: "error", message: error.message, data: null });
   }
 };
 

@@ -1,12 +1,10 @@
-import Usuario from "../../models/Usuario.model.js";
+import * as usuariosService from "../../services/usuarios.service.js";
 
 const getUsuariosById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const usuario = await Usuario.findByPk(id, {
-      attributes: ["id", "nombre", "email", "avatar"],
-    });
+    const usuario = await usuariosService.findById(id);
 
     if (!usuario) {
       return res.status(404).json({

@@ -1,11 +1,9 @@
-import Usuario from "../../models/Usuario.model.js";
+import * as usuariosService from "../../services/usuarios.service.js";
 
 const getPerfil = async (req, res) => {
   try {
-    // el id NO viene de la URL: viene del token, así nadie puede pedir el perfil de otro
-    const usuario = await Usuario.findByPk(req.usuario.id, {
-      attributes: ["id", "nombre", "email", "admin", "avatar"],
-    });
+    // el id NO viene de la URL: viene del token, así nadie pide el perfil de otro
+    const usuario = await usuariosService.findPerfil(req.usuario.id);
 
     if (!usuario) {
       return res.status(404).json({
@@ -21,9 +19,7 @@ const getPerfil = async (req, res) => {
       data: { usuario },
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ status: "error", message: error.message, data: null });
+    res.status(500).json({ status: "error", message: error.message, data: null });
   }
 };
 
