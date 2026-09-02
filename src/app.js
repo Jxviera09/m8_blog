@@ -2,6 +2,7 @@ import express from "express";
 import authRoutes from "./routes/auth.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js";
 import publicacionesRoutes from "./routes/publicaciones.routes.js";
+import comentariosRoutes from "./routes/comentarios.routes.js";
 import multer from "multer";
 
 const app = express();
@@ -21,6 +22,7 @@ app.use("/auth", authRoutes);
 //RUTAS DE LA API
 app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/publicaciones", publicacionesRoutes);
+app.use("/api/comentarios", comentariosRoutes);
 
 //MANEJO CENTRALIZADO DE ERRORES
 app.use((err, req, res, next) => {

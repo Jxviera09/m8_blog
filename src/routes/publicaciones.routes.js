@@ -14,4 +14,10 @@ router.get("/:id", publicacionesControllers.getPublicacionById);
 //CREAR PUBLICACIÓN (RUTA PROTEGIDA)
 router.post("/", verifyToken, validateBody, publicacionesControllers.crearPublicacion);
 
+//ACTUALIZAR PUBLICACIÓN (RUTA PROTEGIDA)
+router.put("/:id", verifyToken, validateBody, publicacionesControllers.putPublicacion);
+
+//ELIMINAR PUBLICACIÓN (RUTA PROTEGIDA)
+router.delete("/:id", verifyToken, publicacionesControllers.deletePublicacion);
+
 export default router;

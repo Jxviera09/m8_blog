@@ -2,18 +2,27 @@ import Usuario from "../../models/Usuario.model.js";
 
 const getUsuariosById = async (req, res) => {
   try {
-    let { id } = req.params;
+    const { id } = req.params;
 
     const usuario = await Usuario.findByPk(id, {
       attributes: ["id", "nombre", "email", "avatar"],
     });
 
-    res.json({
-      status: "Ok",
-      usuario,
+    if (!usuario) {
+      return res.status(404).json({
+        status: "fail",
+        message: "No existe ningún usuario con id: " + id,
+        data: null,
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Usuario obtenido con éxito.",
+      data: { usuario },
     });
   } catch (error) {
-    res.status(500).json({ status: "error", message: error.message });
+    res.status(500).json({ status: "error", message: error.message, data: null });
   }
 };
 
